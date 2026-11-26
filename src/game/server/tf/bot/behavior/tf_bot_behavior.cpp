@@ -259,17 +259,6 @@ ActionResult< CTFBot >	CTFBotMainAction::Update( CTFBot *me, float interval )
 	FireWeaponAtEnemy( me );
 	Dodge( me );
 
-	if ( me->IsPlayerClass( TF_CLASS_DEMOMAN ) )
-	{
-		// dont auto reload, so we fire stickies fast
-		me->SetAutoReload( false );
-	}
-	else
-	{
-		// reload weapons
-		me->SetAutoReload( true );
-	}
-
 	return Continue();
 }
 

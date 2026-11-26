@@ -1252,7 +1252,7 @@ bool CTFWeaponBase::Deploy( void )
 		if ( !pPlayer )
 			return false;
 
-		float flWeaponSwitchTime = 0.5f;
+		float flWeaponSwitchTime = 0.67f;
 
 		// Overrides the anim length for calculating ready time.
 		float flDeployTimeMultiplier = 1.0f;
@@ -1299,15 +1299,6 @@ bool CTFWeaponBase::Deploy( void )
 		
 		flDeployTimeMultiplier = MAX( flDeployTimeMultiplier, 0.00001f );
 		float flDeployTime = flWeaponSwitchTime * flDeployTimeMultiplier;
-		float flPlaybackRate = Clamp( ( 1.f / flDeployTimeMultiplier ) * ( 0.67f / flWeaponSwitchTime ), -4.f, 12.f ); // clamp between the range that's defined in send table
-		if ( pPlayer->GetViewModel(0) )
-		{
-			pPlayer->GetViewModel(0)->SetPlaybackRate( flPlaybackRate );
-		}
-		if ( pPlayer->GetViewModel(1) )
-		{
-			pPlayer->GetViewModel(1)->SetPlaybackRate( flPlaybackRate );
-		}
 		
 		// Don't override primary attacks that are already further out than this. This prevents
 		// people exploiting weapon switches to allow weapons to fire faster.
@@ -2407,14 +2398,6 @@ void CTFWeaponBase::ItemBusyFrame( void )
 				bAbortReload = true;
 			}
 		}
-		else if ( m_bInReload )
-		{
-			// We don't let them abort before the next fire point, so they can't use reload to fire before they would have fired if they hadn't reloaded
-			if ( gpGlobals->curtime >= m_flReloadPriorNextFire )
-			{
-				bAbortReload = true;
-			}
-		}
 
 		if ( bAbortReload )
 		{
@@ -2446,14 +2429,6 @@ void CTFWeaponBase::ItemPostFrame( void )
 	if ( !pOwner )
 	{
 		return;
-	}
-
-	bool bNeedsReload = NeedsReloadForAmmo1( GetMaxClip1() ) || ( IsEnergyWeapon() && !Energy_FullyCharged() );
-
-	// If we're not shooting, and we want to autoreload, press our reload key
-	if ( !AutoFiresFullClip() && pOwner->ShouldAutoReload() && UsesClipsForAmmo1() && !(pOwner->m_nButtons & (IN_ATTACK|IN_ATTACK2)) && bNeedsReload )
-	{
-		pOwner->m_nButtons |= IN_RELOAD;
 	}
 
 	// debounce InAttack flags
